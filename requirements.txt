@@ -51,3 +51,5 @@ watchdog==6.0.0
 Werkzeug==3.1.8
 matplotlib
 seaborn
+contractions
+emoji
