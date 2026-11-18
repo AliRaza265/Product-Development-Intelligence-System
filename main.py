@@ -1,6 +1,15 @@
 import pandas as pd 
 import matplotlib.pyplot as plt
 import seaborn  as sns
+from sklearn.model_selection import train_test_split,cross_val_score,KFold
+from sklearn.preprocessing import LabelEncoder
+from sklearn.compose import ColumnTransformer
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score,classification_report,confusion_matrix
+from sklearn.svm import LinearSVC
+from sklearn.pipeline import make_pipeline
+
 
 import re
 from contractions import fix
@@ -10,12 +19,7 @@ from nltk.tokenize import word_tokenize
 import nltk
 from nltk.corpus import stopwords
 from nltk.stem import SnowballStemmer
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import LabelEncoder
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score,classification_report,confusion_matrix
-from sklearn.svm import LinearSVC
+
 # Download Packages 
 nltk.download("punkt_tab")
 nltk.download("stopwords")
@@ -26,7 +30,7 @@ stemer  = SnowballStemmer(language="english")
 
 
 # Loading Dataset from Device 
-read_xlsx = pd.read_excel("data_set/Virtual Assistant Devices Dataset _Final Version.xlsx",usecols= ["Comments","Sentiment"])
+read_xlsx = pd.read_excel("data_set/Virtual Assistant Devices Dataset _Final Version.xlsx",usecols= ["Comments","Sentiment",""])
 print(read_xlsx.head(20))
 
 # Data_set EDA 
@@ -98,7 +102,7 @@ print(x_test.shape)
 vectorizor = TfidfVectorizer(ngram_range = (1,2) , max_features = 100000, sublinear_tf = True )
 x_train_vectorize = vectorizor.fit_transform(x_train["Process_Reviews"])
 x_test_vectorize = vectorizor.transform(x_test["Process_Reviews"])
-print(x_train_vectorize.toarray())
+print(x_train_vectorize.shape)
 
 # Linear SVC Model 
 svc_model = LinearSVC()
@@ -126,8 +130,8 @@ def user_input(user_input):
 
 user_inp = input("Drop a Comment : ")
 # {'Negative'(0), 'Neutral'(1), 'Positive'(2)}
-
 result = user_input(user_inp)
+print(result)
 if result  == 0 :
     result = "Negative"
 elif result == 1:
@@ -135,4 +139,16 @@ elif result == 1:
 elif result == 2:
     result = "Positive"
 print(f"Model_pediction : {result}")
- 
+
+
+# Cross Validate the Accuracy of Model
+svc_pipline = make_pipeline(
+ (vectorizor),
+ (svc_model)
+)
+x_train = x_train.iloc[:, 0]
+print(x_train.shape)
+print(y_train.shape)
+k_fold = KFold(n_splits = 5 , shuffle = True , random_state = 42)
+cv_result = cross_val_score(svc_pipline , x_train , y_train , cv = k_fold , scoring= "accuracy")
+print(cv_result.mean())
