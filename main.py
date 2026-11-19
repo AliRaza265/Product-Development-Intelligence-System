@@ -9,6 +9,7 @@ from sklearn.metrics import accuracy_score,classification_report,confusion_matri
 from sklearn.svm import LinearSVC
 from sklearn.pipeline import make_pipeline
 from reviews_preprocessing import String_processing
+import pickle as pkl
 
 # Loading Dataset from Device 
 read_xlsx = pd.read_excel("data_set/Virtual Assistant Devices Dataset _Final Version.xlsx",usecols= ["Comments","Sentiment","Aspect(s)"])
@@ -112,19 +113,7 @@ aspect_model.fit(x_train_aspect_vec,y_train_aspect)
 aspect_model_pred = aspect_model.predict(x_test_aspect_vec)
 print(f"Aspect_Model Accuracy : {(accuracy_score(y_test_aspect, aspect_model_pred))}")
 print(f"Aspect_Model Confusion_matrix : {(confusion_matrix(y_test_aspect , aspect_model_pred))}")
-print(f"Aspect_Model Classification_report : {(classification_report(y_test_aspect , aspect_model_pred))}")
-
-def user_input(user_input):
-    input_process = String_processing(user_input)
-    print(input_process)
-    input_vectorize = vector.transform([input_process])
-    print(input_vectorize.toarray())
-    model_pred = aspect_model.predict(input_vectorize)
-    return model_pred[0]
-
-user_inp = input("Drop a Comment : ")
-result = user_input(user_inp)
-print(aspect_encoder.inverse_transform([result])[0])
+print(f"Aspect_Model Classification_report : {(classification_report(y_test_aspect , aspect_model_pred))}")                  
 
 # Cross Validate the Accuracy of Model
 svc_pipline = make_pipeline(
@@ -149,3 +138,11 @@ print(y_train_aspect.shape)
 k_fold = KFold(n_splits = 5 , shuffle = True , random_state = 42)
 cv_result = cross_val_score(aspect_pipline , x_train_aspect , y_train_aspect , cv = k_fold , scoring= "accuracy")
 print(cv_result.mean())
+
+# Export the Models for use in App
+pkl.dump(aspect_encoder, open("Models/Aspect_encoder.pkl","wb"))
+pkl.dump(encoder , open("Models/Sentiment_encoder.pkl","wb"))
+pkl.dump(vectorizor , open("Models/Sentiment_vectorizor.pkl","wb"))
+pkl.dump(vector , open("Models/Aspect_vectorizor.pkl","wb"))
+pkl.dump(svc_model, open("Models/Sentiment_model.pkl","wb"))
+pkl.dump(aspect_model , open("Models/Aspect_model.pkl","wb"))
