@@ -77,8 +77,6 @@ aspect_encoder = LabelEncoder()
 read_xlsx["Aspect(s)"] = aspect_encoder.fit_transform(read_xlsx["Aspect(s)"])
 print(dict(zip(aspect_encoder.classes_, aspect_encoder.transform(aspect_encoder.classes_))))
 
-
-
 X_sentiment = read_xlsx[["Process_Reviews"]]
 y_sentiment = read_xlsx["Sentiment"]
 x_train_sentient,x_test_sentient,y_train_sentient,y_test_sentient  = train_test_split(X_sentiment,y_sentiment,random_state=42,test_size=0.2)
