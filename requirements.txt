@@ -53,3 +53,4 @@ matplotlib
 seaborn
 contractions
 emoji
+plotly
