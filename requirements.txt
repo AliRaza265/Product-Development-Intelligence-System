@@ -54,3 +54,4 @@ seaborn
 contractions
 emoji
 plotly
+openpyxl
